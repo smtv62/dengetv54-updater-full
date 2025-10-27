@@ -178,7 +178,7 @@ class Dengetv54Manager:
                     return base
 
         # 4) fallback default
-        default = "https://tible.zirvedesin13.sbs/"
+        default = "https://kodiaq.zirvedesin24.sbs/"
         cache["base_stream_url"] = default
         cache["base_ts"] = now_ts
         self._save_cache(cache)
@@ -199,7 +199,7 @@ class Dengetv54Manager:
                 except Exception:
                     continue
         print("⚠️ Dengetv: Çalışan domain bulunamadı, varsayılan kullanılıyor.")
-        return "https://dengetv58.live/"
+        return "https://dengetv67.live/"
 
     # ---------- generate m3u ----------
     async def calistir(self):
