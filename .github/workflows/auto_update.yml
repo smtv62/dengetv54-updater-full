@@ -10,24 +10,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # --- Checkout repository (token ile push için credentials sağlanıyor) ---
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          persist-credentials: false
+          persist-credentials: true   # GITHUB_TOKEN push için kullanılıyor
 
+      # --- Python kurulumu ---
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
+      # --- Bağımlılıkları yükle ---
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      # --- M3U oluştur ---
       - name: Run M3U generator
         run: |
           mkdir -p output
           python dengetv54_manager.py
 
+      # --- Commit ve push (sadece değişiklik varsa) ---
       - name: Commit and push changes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -35,7 +40,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          # sadece değişiklik varsa commit et
+          # sadece değişiklik varsa commit
           git add output/dengetv54.m3u cache.json || true
           git diff --cached --quiet || git commit -m "🔄 Auto update M3U - $(date +'%Y-%m-%d %H:%M:%S')"
 
