@@ -158,7 +158,7 @@ class Dengetv54Manager:
                     return base
 
         # 3) Heuristic brute-force (common subdomains + numeric suffix)
-        common_subs = ["tible","kodiaq","stream","live","media","cdn","video","player"]
+        common_subs = ["kodiaq","kodiaq","stream","live","media","cdn","video","player"]
         # prepare candidate list (limit breadth to avoid huge scan)
         candidates = [f"{sub}.zirvedesin{n}.sbs" for sub in common_subs for n in range(10, 80)]
         async with AsyncClient(timeout=5) as client:
