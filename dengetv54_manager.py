@@ -177,7 +177,7 @@ class Dengetv54Manager:
                     print(f"✅ Zirvedesin (heuristic): Çalışan domain bulundu -> {base}")
                     return base
 
-        # 4) fallback default (updated per request)
+        # 4) fallback default (updated as requested)
         default = "https://kodiaq.zirvedesin24.sbs/"
         cache["base_stream_url"] = default
         cache["base_ts"] = now_ts
@@ -185,4 +185,49 @@ class Dengetv54Manager:
         print("⚠️ Zirvedesin: Domain bulunamadı, varsayılan kullanılıyor.")
         return default
 
-    # ---------- dengetv discovery: sequential increment
+    # ---------- dengetv discovery: sequential increment as requested ----------
+    async def find_working_dengetv(self, start=67, end=200):
+        headers = {"User-Agent":"Mozilla/5.0"}
+        async with AsyncClient(timeout=5) as client:
+            for i in range(start, end+1):
+                url = f"https://dengetv{i}.live/"
+                try:
+                    r = await client.get(url, headers=headers)
+                    if r.status_code == 200 and r.text and "m3u8" in r.text:
+                        print(f"✅ Dengetv: Çalışan domain bulundu -> {url}")
+                        return url
+                except Exception:
+                    continue
+        print("⚠️ Dengetv: Çalışan domain bulunamadı, varsayılan kullanılıyor.")
+        # fallback default updated as requested
+        return "https://dengetv67.live/"
+
+    # ---------- generate m3u ----------
+    async def calistir(self):
+        # discover sources
+        self.base_stream_url = await self.find_base_stream_url()
+        self.dengetv_url = await self.find_working_dengetv(start=67, end=200)
+
+        m3u = ["#EXTM3U"]
+        for _, file_name in self.channel_files.items():
+            channel_name = re.sub(r'(\d+)', r' \1', file_name.replace(".m3u8", "")).title()
+            m3u.append(f'#EXTINF:-1 group-title="Dengetv54",{channel_name}')
+            m3u.append('#EXTVLCOPT:http-user-agent=Mozilla/5.0')
+            m3u.append(f'#EXTVLCOPT:http-referrer={self.dengetv_url}')
+            m3u.append(f'{self.base_stream_url}{file_name}')
+
+        content = "\n".join(m3u)
+
+        # write output
+        os.makedirs("output", exist_ok=True)
+        output_path = "output/dengetv54.m3u"
+        with open(output_path, "w", encoding="utf-8") as f:
+            f.write(content)
+
+        print(f"✅ M3U dosyası başarıyla güncellendi → {output_path}")
+        return content
+
+
+if __name__ == "__main__":
+    mgr = Dengetv54Manager()
+    asyncio.run(mgr.calistir())
