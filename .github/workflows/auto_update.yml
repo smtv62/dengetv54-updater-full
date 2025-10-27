@@ -34,8 +34,10 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # sadece değişiklik varsa commit et
           git add output/dengetv54.m3u cache.json || true
-          git commit -m "🔄 Auto update M3U - $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
-          git fetch origin main
-          git reset --soft origin/main || true
-          git push -f https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
+          git diff --cached --quiet || git commit -m "🔄 Auto update M3U - $(date +'%Y-%m-%d %H:%M:%S')"
+
+          # branch protection uyumlu push
+          git push origin HEAD:main
