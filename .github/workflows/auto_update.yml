@@ -2,8 +2,8 @@ name: Auto Update M3U
 
 on:
   schedule:
-    - cron: "0 * * * *"  # every hour UTC
-  workflow_dispatch:
+    - cron: "0 * * * *"  # Her saat başı UTC
+  workflow_dispatch:       # Manuel tetikleme
 
 jobs:
   update_m3u:
@@ -26,7 +26,7 @@ jobs:
       - name: Run M3U generator
         run: |
           mkdir -p output
-          python generate_m3u.py
+          python dengetv54_manager.py
 
       - name: Commit and push changes
         env:
