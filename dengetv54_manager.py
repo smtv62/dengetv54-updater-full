@@ -160,7 +160,7 @@ class Dengetv54Manager:
                     print(f"✅ Zirvedesin (heuristic): Çalışan domain bulundu -> {base}")
                     return base
 
-        default = "https://kodiaq.zirvedesin24.sbs/"
+        default = "https://z.zirvedesin30.sbs/"
         cache["base_stream_url"] = default
         cache["base_ts"] = now_ts
         self._save_cache(cache)
